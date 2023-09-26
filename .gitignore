@@ -134,3 +134,6 @@ dmypy.json
 # DrawIO
 *.bkp
 *.dtmp
+
+# MacOS
+.DS_Store
