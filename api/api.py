@@ -70,11 +70,25 @@ def api_available_within_timeframe():
         WHERE r.zeitpunkt BETWEEN ? AND ?
     )
     '''
-    
+
     available_tables = cur.execute(query, (start_zeitpunkt, end_zeitpunkt)).fetchall()
     
     return jsonify(available_tables)
 
+# To show all reserved tables ordered by time
+@app.route('/api/v1/tables/reserved', methods=['GET'])
+def api_reserved():
+    conn = sqlite3.connect('restaurant.db')
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+    api_tables = cur.execute('''
+        SELECT tischNummer, zeitpunkt
+        FROM reservierungen
+        ORDER BY zeitpunkt ASC
+        
+    ''').fetchall()
+    
+    return jsonify(api_tables)
 
 
 
