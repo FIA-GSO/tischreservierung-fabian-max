@@ -26,8 +26,8 @@ def dict_factory(cursor, row):
     return d
 
 # To show all reservations that have been made
-@app.route('/api/v1/reservations/all', methods=['GET'])
-def api_all():
+@app.route('/api/v1/reservations', methods=['GET'])
+def api_reservations():
     conn = sqlite3.connect('restaurant.db')
     conn.row_factory = dict_factory
     cur = conn.cursor()
@@ -36,8 +36,8 @@ def api_all():
     return jsonify(all_tables)
 
 # To reserv a table in a given timeframe
-@app.route('/api/v1/reservations', methods=['GET','POST'])
-def api_add():
+@app.route('/api/v1/reservation', methods=['GET','POST'])
+def api_reservation():
     zeitpunkt = request.form.get('zeitpunkt')
     tischnummer = request.form.get('tischnummer')
     pin = request.form.get('pin')
@@ -66,7 +66,7 @@ def api_add():
 
 
 # To show all tables that exist in the restaurant
-@app.route('/api/v1/tables/all', methods=['GET'])
+@app.route('/api/v1/tables', methods=['GET'])
 def api_tables():
     conn = sqlite3.connect('restaurant.db')
     conn.row_factory = dict_factory
