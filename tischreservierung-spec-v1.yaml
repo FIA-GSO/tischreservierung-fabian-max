@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: Tischreservierungs API
+  version: '1.0'
+servers:
+  - url: /api/v1
+paths:
+  /reservations:
+    get:
+      summary: Listet alle Reservierungen auf
+      responses:
+        '200':
+          description: Eine Liste von Reservierungen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+  /reservation:
+    post:
+      summary: Reserviert einen Tisch
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                zeitpunkt:
+                  type: string
+                  format: date-time
+                tischnummer:
+                  type: integer
+                pin:
+                  type: integer
+      responses:
+        '201':
+          description: Erfolgreiche Reservierung
+        '400':
+          description: Fehlende Parameter
+  /tables:
+    get:
+      summary: Listet alle Tische auf
+      responses:
+        '200':
+          description: Eine Liste von Tischen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Table'
+  /tables/available:
+    get:
+      summary: Zeigt verfügbare Tische innerhalb eines Zeitrahmens
+      parameters:
+        - name: start_zeitpunkt
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: end_zeitpunkt
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Eine Liste von verfügbaren Tischen
+        '400':
+          description: Fehlende Parameter
+  /tables/reserved:
+    get:
+      summary: Zeigt alle reservierten Tische geordnet nach Zeit
+      responses:
+        '200':
+          description: Eine Liste von reservierten Tischen
+components:
+  schemas:
+    Reservation:
+      type: object
+      properties:
+        zeitpunkt:
+          type: string
+          format: date-time
+        tischnummer:
+          type: integer
+        pin:
+          type: integer
+    Table:
+      type: object
+      properties:
+        tischnummer:
+          type: integer
+        anzahlPlaetze:
+          type: integer
