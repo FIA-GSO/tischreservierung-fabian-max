@@ -35,6 +35,36 @@ def api_all():
     
     return jsonify(all_tables)
 
+# To reserv a table in a given timeframe
+@app.route('/api/v1/reservations', methods=['GET','POST'])
+def api_add():
+    zeitpunkt = request.form.get('zeitpunkt')
+    tischnummer = request.form.get('tischnummer')
+    pin = request.form.get('pin')
+    storniert = 'False'
+
+    if not zeitpunkt or not tischnummer or not pin:
+        conn.close()
+        return jsonify({"error": f"All parameters are required. You provided {zeitpunkt}, {tischnummer}, {pin}"}), 400
+
+    conn = sqlite3.connect('restaurant.db')
+    conn.row_factory = dict_factory
+    cur = conn.cursor()
+
+    query = '''
+    INSERT INTO reservierungen (zeitpunkt, tischnummer, pin, storniert)
+    VALUES (?, ?, ?, ?)
+    '''
+
+    cur.execute(query, (zeitpunkt, tischnummer, pin, storniert))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True}), 201
+    
+
+
+
 # To show all tables that exist in the restaurant
 @app.route('/api/v1/tables/all', methods=['GET'])
 def api_tables():
@@ -45,7 +75,7 @@ def api_tables():
         SELECT *
         FROM tische
      ''').fetchall()
-    
+    conn.close()
     return jsonify(api_tables)
 
 #To show all available tables in a given timeframe
@@ -72,7 +102,7 @@ def api_available_within_timeframe():
     '''
 
     available_tables = cur.execute(query, (start_zeitpunkt, end_zeitpunkt)).fetchall()
-    
+    conn.close()
     return jsonify(available_tables)
 
 # To show all reserved tables ordered by time
@@ -87,8 +117,10 @@ def api_reserved():
         ORDER BY zeitpunkt ASC
         
     ''').fetchall()
-    
+    conn.close()
     return jsonify(api_tables)
+
+
 
 
 
